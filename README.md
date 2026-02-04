@@ -1,66 +1,73 @@
 # 🏋️‍♂️ Fit-System: Sistema de Gestión de Gimnasios
 
-**Fit-System** es una aplicación web integral diseñada para simplificar la administración de gimnasios pequeños y medianos. Permite gestionar socios, controlar vencimientos de cuotas, registrar pagos y enviar notificaciones automáticas vía WhatsApp, todo contenedorizado con Docker para un despliegue rápido y sencillo.
+**Fit-System** es una plataforma web integral diseñada para la administración eficiente de gimnasios. Permite gestionar socios, controlar vencimientos, registrar pagos históricos, visualizar estadísticas de ingresos y enviar notificaciones automáticas vía WhatsApp. Todo el sistema está contenerizado con Docker para un despliegue inmediato.
 
 ---
 
 ## 🚀 Tecnologías
 
-El proyecto utiliza un stack moderno y ligero:
+El proyecto utiliza un stack moderno, rápido y escalable:
 
 ### Frontend
 
-- **React + Vite:** Para una interfaz rápida y reactiva.
-- **Bootstrap 5:** Diseño responsivo y componentes estéticos (Modales, Tablas, Alertas).
-- **Axios:** Comunicación con el Backend.
-- **React Router:** Navegación SPA (Single Page Application).
+- **React + Vite:** Interfaz de usuario de alto rendimiento.
+- **Bootstrap 5:** Diseño responsivo, modales y alertas estéticas.
+- **Chart.js + React-Chartjs-2:** Visualización de datos y gráficos estadísticos.
+- **Axios:** Comunicación eficiente con la API.
+- **React Router:** Navegación fluida (SPA).
 
 ### Backend
 
-- **Node.js + Express:** API RESTful robusta.
-- **SQLite:** Base de datos ligera y portátil (sin configuraciones complejas).
-- **Sequelize ORM:** Manejo de modelos y consultas SQL de alto nivel.
+- **Node.js + Express:** API RESTful escalable.
+- **SQLite:** Base de datos SQL ligera y portátil.
+- **Sequelize ORM:** Modelado de datos (Socios, Pagos) y relaciones.
 
 ### Infraestructura
 
-- **Docker & Docker Compose:** Orquestación completa del entorno (Front + Back + Base de Datos + Auth).
-- **Keycloak:** (Infraestructura preparada) Servidor de identidad y acceso.
+- **Docker & Docker Compose:** Entorno de desarrollo unificado (Front + Back + DB + Auth).
+- **Keycloak:** (Infraestructura base) Servidor de identidad y acceso.
 
 ---
 
 ## ✨ Funcionalidades Principales
 
-### 1. Gestión de Socios (CRUD Avanzado)
+### 1. Gestión Integral de Socios (CRUD)
 
-- **Alta de Socios:** Registro con validaciones automáticas.
-- **Buscador Inteligente:** Filtrado en tiempo real por nombre.
-- **Ordenamiento:** Clasificación por fecha de vencimiento (para ver urgencias) o alfabéticamente.
-- **Ficha Técnica:** Visualización detallada de datos y estado del socio en ventana modal.
+- **Alta y Modificación:** Registro completo con validación de datos.
+- **Buscador en Tiempo Real:** Filtrado instantáneo por nombre.
+- **Ordenamiento Dinámico:** Clasificación por Vencimiento (para urgencias) o Alfabéticamente.
+- **Ficha Técnica:** Modal con detalles completos del socio.
 
-### 2. Control de Pagos y Vencimientos 📅
+### 2. Panel de Estadísticas y Finanzas 📊
 
-- **Cálculo Automático:** Al registrar un pago, el sistema calcula el vencimiento a 30 días.
+- **Gráficos Interactivos:** Visualización de ingresos mensuales agrupados por método de pago (Efectivo, Transferencia, Tarjeta).
+- **Resumen Anual:** Reporte detallado de la cantidad de operaciones por año.
+- **Historial de Pagos:** El sistema registra cada transacción en una tabla histórica para no perder datos al renovar cuotas.
+
+### 3. Control de Pagos y Vencimientos 📅
+
+- **Cálculo Automático:** Al registrar un pago, el sistema proyecta el vencimiento a 30 días automáticamente.
 - **Alertas Visuales:**
-  - 🔴 **Por Vencer:** Etiqueta roja si faltan 3 días o menos (o si ya venció).
-  - 🟢 **Al día:** Etiqueta verde si la cuota está vigente.
-- **Renovación Rápida:** Funcionalidad "Un Clic" para renovar cuotas, permitiendo cambiar la fecha de pago y el medio de cobro (Efectivo, Transferencia, Tarjeta).
+  - 🔴 **Por Vencer:** Aviso visual si faltan 3 días o menos.
+  - 🟢 **Al día:** Indicador de cuota vigente.
+- **Renovación Express:** Botón "Un Clic" para renovar el mes, actualizando el vencimiento y guardando el registro en el historial financiero.
 
-### 3. Notificaciones Vía WhatsApp 📱
+### 4. Notificaciones Inteligentes (WhatsApp) 📱
 
-- **Smart Link (Argentina):** El sistema detecta y corrige automáticamente los números de teléfono, agregando el prefijo internacional `549` si falta, asegurando que el enlace funcione siempre.
-- **Mensajes Personalizados:** Genera un mensaje pre-redactado con el nombre del socio y la fecha exacta de vencimiento.
+- **Smart Link (Argentina):** Algoritmo que detecta y corrige números de teléfono (agrega prefijo `549` si falta) para asegurar la entrega del mensaje.
+- **Mensajes Personalizados:** Redacción automática con el nombre del socio y la fecha exacta de vencimiento.
 
-### 4. Papelera de Reciclaje (Baja Lógica) ♻️
+### 5. Papelera de Reciclaje (Baja Lógica) ♻️
 
-- **Soft Delete:** Los socios nunca se borran físicamente de la base de datos, solo se marcan como inactivos.
-- **Gestión de Bajas:** Interruptor para visualizar la "Papelera" de socios eliminados.
-- **Restauración:** Botón para reactivar socios dados de baja accidentalmente o que regresan al gimnasio.
+- **Seguridad de Datos:** Los socios nunca se eliminan físicamente; se desactivan.
+- **Modo Papelera:** Interruptor para visualizar ex-socios.
+- **Restauración:** Funcionalidad para reactivar socios dados de baja con un solo clic.
 
 ---
 
-## 🛠️ Instalación y Ejecución
+## 🛠️ Instalación y Puesta en Marcha
 
-Al estar dockerizado, no necesitas instalar Node.js ni bases de datos localmente. Solo necesitas **Docker Desktop**.
+Requisitos: Tener instalado **Docker Desktop**.
 
 1.  **Clonar el repositorio:**
 
@@ -75,12 +82,12 @@ Al estar dockerizado, no necesitas instalar Node.js ni bases de datos localmente
     docker-compose up --build
     ```
 
-    _(La primera vez puede tardar unos minutos en descargar las imágenes y dependencias)._
+    _(La primera vez puede demorar mientras descarga las imágenes)._
 
 3.  **Acceder a la aplicación:**
-    - 🖥️ **Frontend (Panel):** [http://localhost:5173](http://localhost:5173)
-    - ⚙️ **Backend (API):** [http://localhost:3000](http://localhost:3000)
-    - 🔐 **Keycloak (Auth):** [http://localhost:8080](http://localhost:8080)
+    - 🖥️ **Panel Principal:** [http://localhost:5173](http://localhost:5173)
+    - 📈 **Estadísticas:** [http://localhost:5173/estadisticas](http://localhost:5173/estadisticas)
+    - ⚙️ **Backend API:** [http://localhost:3000](http://localhost:3000)
 
 ---
 
@@ -90,23 +97,21 @@ Al estar dockerizado, no necesitas instalar Node.js ni bases de datos localmente
 Fit-System/
 ├── backend/                # Servidor API
 │   ├── src/
-│   │   ├── controllers/    # Lógica (Renovar, CRUD, WhatsApp logic)
-│   │   ├── models/         # Modelo de DB (Sequelize)
+│   │   ├── controllers/    # Lógica (Renovar, Stats, CRUD)
+│   │   ├── models/         # Modelos DB (Socio, Pago)
 │   │   ├── routes/         # Rutas Express
-│   │   └── db.js           # Conexión SQLite
-│   ├── server.js           # Entry point
+│   │   └── db.js           # Configuración SQLite
 │   ├── database.sqlite     # Archivo de Base de Datos
-│   └── Dockerfile
+│   └── server.js           # Entry point
 │
 ├── frontend/               # Cliente React
 │   ├── src/
-│   │   ├── components/     # Navbar, UI elements
-│   │   ├── pages/          # Dashboard.jsx, Registro.jsx
-│   │   ├── services/       # Api Calls (Axios)
+│   │   ├── components/     # Navbar
+│   │   ├── pages/          # Dashboard, Registro, Estadisticas
+│   │   ├── services/       # Conexión API
 │   │   └── ...
-│   ├── Dockerfile
 │   └── vite.config.js
 │
-├── docker-compose.yml      # Configuración de servicios
+├── docker-compose.yml      # Orquestación de servicios
 └── README.md               # Documentación
 ```
