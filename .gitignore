@@ -1,0 +1,35 @@
+# --- Dependencias (Lo más importante) ---
+node_modules/
+**/node_modules/
+package-lock.json
+# (Opcional: Si querés subir el lockfile para asegurar versiones exactas, borrá la línea de arriba)
+
+# --- Base de Datos Local ---
+# Ignoramos la DB para no sobrescribir datos de otros o subir datos reales
+*.sqlite
+*.sqlite-journal
+backend/database.sqlite
+
+# --- Archivos de Construcción (Builds) ---
+dist/
+build/
+out/
+
+# --- Variables de Entorno y Secretos ---
+.env
+.env.local
+
+# --- Docker ---
+# Si mapeaste volúmenes locales que no querés subir
+.docker/
+
+# --- Logs del Sistema ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# --- Archivos del Sistema Operativo ---
+.DS_Store
+Thumbs.db
