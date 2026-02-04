@@ -18,6 +18,9 @@ function Navbar() {
           >
             ➕ Nuevo Socio
           </Link>
+          <Link to="/estadisticas" className="btn btn-outline-light btn-sm">
+            📈 Estadísticas
+          </Link>
         </div>
       </div>
     </nav>

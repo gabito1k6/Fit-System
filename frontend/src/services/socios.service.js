@@ -30,5 +30,11 @@ export const sociosService = {
         // datosRenovacion debe tener { fechaPago, metodoPago }
         const response = await axios.post(`${API_URL}/${id}/renovar`, datosRenovacion);
         return response.data;
+    },
+    // ... dentro del objeto sociosService ...
+    obtenerEstadisticas: async () => {
+        const response = await axios.get(`${API_URL}/estadisticas`);
+        return response.data;
     }
+    // ...
 };

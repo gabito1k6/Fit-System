@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar"; // 1. Importamos el componente
 import Dashboard from "./pages/Dashboard";
 import Registro from "./pages/Registro";
 import Login from "./pages/Login"; // Asumo que ya tenés o vas a tener el Login
+import Estadisticas from "./pages/Estadisticas";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/registro" element={<Registro />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/estadisticas" element={<Estadisticas />} />
         </Routes>
       </div>
     </BrowserRouter>
