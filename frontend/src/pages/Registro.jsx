@@ -14,7 +14,7 @@ function Registro() {
     try {
       await sociosService.crear(data);
       alert("✅ Socio registrado con éxito");
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       alert("❌ Error al registrar socio");
     }
@@ -98,7 +98,7 @@ function Registro() {
                   <button
                     type="button"
                     className="btn btn-outline-secondary"
-                    onClick={() => navigate("/dashboard")}
+                    onClick={() => navigate("/")}
                   >
                     Cancelar
                   </button>
