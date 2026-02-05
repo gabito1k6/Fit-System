@@ -1,73 +1,72 @@
 # 🏋️‍♂️ Fit-System: Sistema de Gestión de Gimnasios
 
-**Fit-System** es una plataforma web integral diseñada para la administración eficiente de gimnasios. Permite gestionar socios, controlar vencimientos, registrar pagos históricos, visualizar estadísticas de ingresos y enviar notificaciones automáticas vía WhatsApp. Todo el sistema está contenerizado con Docker para un despliegue inmediato.
+**Fit-System** es una plataforma web profesional para la administración de gimnasios. Combina gestión de socios, control financiero, estadísticas avanzadas y seguridad corporativa, todo empaquetado en contenedores Docker para un despliegue instantáneo.
 
 ---
 
 ## 🚀 Tecnologías
 
-El proyecto utiliza un stack moderno, rápido y escalable:
+El proyecto utiliza un stack moderno y escalable:
 
 ### Frontend
 
-- **React + Vite:** Interfaz de usuario de alto rendimiento.
-- **Bootstrap 5:** Diseño responsivo, modales y alertas estéticas.
-- **Chart.js + React-Chartjs-2:** Visualización de datos y gráficos estadísticos.
-- **Axios:** Comunicación eficiente con la API.
-- **React Router:** Navegación fluida (SPA).
+- **React + Vite:** Interfaz ultra-rápida.
+- **Bootstrap 5:** Diseño responsivo y componentes UI.
+- **Chart.js:** Gráficos estadísticos interactivos.
+- **Keycloak JS:** Cliente de seguridad para autenticación.
+- **Axios & React Router:** Comunicación API y navegación.
 
 ### Backend
 
-- **Node.js + Express:** API RESTful escalable.
-- **SQLite:** Base de datos SQL ligera y portátil.
-- **Sequelize ORM:** Modelado de datos (Socios, Pagos) y relaciones.
+- **Node.js + Express:** Servidor API RESTful.
+- **Sequelize ORM:** Gestión de base de datos SQL y relaciones (Socios <-> Pagos).
+- **SQLite:** Persistencia de datos ligera y eficiente.
 
-### Infraestructura
+### Infraestructura & Seguridad
 
-- **Docker & Docker Compose:** Entorno de desarrollo unificado (Front + Back + DB + Auth).
-- **Keycloak:** (Infraestructura base) Servidor de identidad y acceso.
+- **Docker & Docker Compose:** Entorno unificado.
+- **Keycloak:** Servidor de identidad (IAM) para protección de rutas y gestión de sesiones.
 
 ---
 
 ## ✨ Funcionalidades Principales
 
-### 1. Gestión Integral de Socios (CRUD)
+### 1. Seguridad Corporativa (Auth) 🔐
 
-- **Alta y Modificación:** Registro completo con validación de datos.
-- **Buscador en Tiempo Real:** Filtrado instantáneo por nombre.
-- **Ordenamiento Dinámico:** Clasificación por Vencimiento (para urgencias) o Alfabéticamente.
-- **Ficha Técnica:** Modal con detalles completos del socio.
+- **Acceso Restringido:** Nadie puede ver el sistema sin iniciar sesión.
+- **Integración IAM:** Redirección automática al servidor de autenticación (Keycloak).
+- **Gestión de Sesiones:** Login y Logout seguros desde la aplicación.
 
-### 2. Panel de Estadísticas y Finanzas 📊
+### 2. Panel de Estadísticas Avanzadas 📈
 
-- **Gráficos Interactivos:** Visualización de ingresos mensuales agrupados por método de pago (Efectivo, Transferencia, Tarjeta).
-- **Resumen Anual:** Reporte detallado de la cantidad de operaciones por año.
-- **Historial de Pagos:** El sistema registra cada transacción en una tabla histórica para no perder datos al renovar cuotas.
+- **Filtro Temporal:** Selector de años para navegar por el historial financiero (viajar al pasado para ver rendimientos anteriores).
+- **Gráficos Interactivos:** Visualización de ingresos mensuales desglosados por método de pago (Efectivo, Transferencia, Tarjeta).
+- **Resumen Anual:** Panel lateral con totales históricos y contadores de operaciones.
+- **Historial Persistente:** Tabla dedicada de `Pagos` que guarda cada transacción independientemente del estado del socio.
 
-### 3. Control de Pagos y Vencimientos 📅
+### 3. Gestión de Socios y Cobros 💰
 
-- **Cálculo Automático:** Al registrar un pago, el sistema proyecta el vencimiento a 30 días automáticamente.
-- **Alertas Visuales:**
-  - 🔴 **Por Vencer:** Aviso visual si faltan 3 días o menos.
-  - 🟢 **Al día:** Indicador de cuota vigente.
-- **Renovación Express:** Botón "Un Clic" para renovar el mes, actualizando el vencimiento y guardando el registro en el historial financiero.
+- **Renovación Express:** Funcionalidad para registrar pagos y extender vencimientos con un solo clic.
+- **Cálculo Automático:** El sistema proyecta vencimientos a 30 días.
+- **Alertas de Vencimiento:**
+  - 🔴 **Crítico:** Aviso visual si faltan 3 días o menos.
+  - 🟢 **Al día:** Estado vigente.
 
 ### 4. Notificaciones Inteligentes (WhatsApp) 📱
 
-- **Smart Link (Argentina):** Algoritmo que detecta y corrige números de teléfono (agrega prefijo `549` si falta) para asegurar la entrega del mensaje.
-- **Mensajes Personalizados:** Redacción automática con el nombre del socio y la fecha exacta de vencimiento.
+- **Smart Link Argentina:** Algoritmo que detecta números locales, limpia caracteres y agrega prefijos internacionales (`549`) automáticamente.
+- **Mensajes Pre-redactados:** Envía recordatorios personalizados con nombre y fecha exacta de vencimiento.
 
-### 5. Papelera de Reciclaje (Baja Lógica) ♻️
+### 5. Auditoría y Papelera ♻️
 
-- **Seguridad de Datos:** Los socios nunca se eliminan físicamente; se desactivan.
-- **Modo Papelera:** Interruptor para visualizar ex-socios.
-- **Restauración:** Funcionalidad para reactivar socios dados de baja con un solo clic.
+- **Soft Delete:** Baja lógica de socios (no se borran datos, se archivan).
+- **Restauración:** Capacidad de reactivar ex-socios manteniendo su historial.
 
 ---
 
-## 🛠️ Instalación y Puesta en Marcha
+## 🛠️ Instalación y Credenciales
 
-Requisitos: Tener instalado **Docker Desktop**.
+Requisitos: **Docker Desktop**.
 
 1.  **Clonar el repositorio:**
 
@@ -82,12 +81,15 @@ Requisitos: Tener instalado **Docker Desktop**.
     docker-compose up --build
     ```
 
-    _(La primera vez puede demorar mientras descarga las imágenes)._
+3.  **Acceso al Sistema:**
+    Abrí tu navegador en: [http://localhost:5173](http://localhost:5173)
 
-3.  **Acceder a la aplicación:**
-    - 🖥️ **Panel Principal:** [http://localhost:5173](http://localhost:5173)
-    - 📈 **Estadísticas:** [http://localhost:5173/estadisticas](http://localhost:5173/estadisticas)
-    - ⚙️ **Backend API:** [http://localhost:3000](http://localhost:3000)
+### 🔑 Credenciales por Defecto
+
+| Portal             | URL              | Usuario   | Contraseña |
+| :----------------- | :--------------- | :-------- | :--------- |
+| **App Gimnasio**   | `localhost:5173` | **dueno** | `1234`     |
+| **Panel Keycloak** | `localhost:8080` | **admin** | `admin`    |
 
 ---
 
@@ -95,23 +97,21 @@ Requisitos: Tener instalado **Docker Desktop**.
 
 ```text
 Fit-System/
-├── backend/                # Servidor API
+├── backend/                # API & Base de Datos
 │   ├── src/
-│   │   ├── controllers/    # Lógica (Renovar, Stats, CRUD)
-│   │   ├── models/         # Modelos DB (Socio, Pago)
-│   │   ├── routes/         # Rutas Express
-│   │   └── db.js           # Configuración SQLite
-│   ├── database.sqlite     # Archivo de Base de Datos
-│   └── server.js           # Entry point
+│   │   ├── controllers/    # Lógica de Negocio (Stats, Renovaciones)
+│   │   ├── models/         # Modelos (Socio, Pago)
+│   │   ├── routes/         # Endpoints
+│   │   └── db.js           # Configuración Sequelize
+│   └── database.sqlite     # Archivo DB (Ignorado en git)
 │
-├── frontend/               # Cliente React
+├── frontend/               # SPA React
 │   ├── src/
-│   │   ├── components/     # Navbar
-│   │   ├── pages/          # Dashboard, Registro, Estadisticas
+│   │   ├── pages/          # Dashboard, Estadisticas, Registro
 │   │   ├── services/       # Conexión API
-│   │   └── ...
-│   └── vite.config.js
+│   │   └── keycloak.js     # Configuración de Seguridad
+│   └── Dockerfile
 │
-├── docker-compose.yml      # Orquestación de servicios
+├── docker-compose.yml      # Orquestador
 └── README.md               # Documentación
 ```

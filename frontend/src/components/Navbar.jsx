@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import keycloak from "../keycloak"; // Importamos la config para usar el logout
 
 function Navbar() {
   return (
@@ -8,19 +9,28 @@ function Navbar() {
           🏋️‍♂️ GymSystem
         </Link>
 
-        <div className="d-flex gap-2">
+        <div className="d-flex gap-2 align-items-center">
           <Link to="/" className="btn btn-outline-light btn-sm">
             📊 Panel
+          </Link>
+          <Link to="/estadisticas" className="btn btn-outline-light btn-sm">
+            📈 Estadísticas
           </Link>
           <Link
             to="/registro"
             className="btn btn-light btn-sm text-primary fw-bold"
           >
-            ➕ Nuevo Socio
+            ➕ Nuevo
           </Link>
-          <Link to="/estadisticas" className="btn btn-outline-light btn-sm">
-            📈 Estadísticas
-          </Link>
+
+          {/* BOTÓN DE LOGOUT */}
+          <button
+            className="btn btn-danger btn-sm ms-2"
+            onClick={() => keycloak.logout()}
+            title="Cerrar Sesión"
+          >
+            🚪 Salir
+          </button>
         </div>
       </div>
     </nav>
