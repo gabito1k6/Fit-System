@@ -21,6 +21,12 @@ export const sociosService = {
         const response = await axios.put(`${API_URL}/${id}`, datos);
         return response.data;
     },
+
+    // --- NUEVA FUNCIÓN ---
+    actualizarPago: async (idPago, datos) => {
+        const response = await axios.put(`${API_URL}/pagos/${idPago}`, datos);
+        return response.data;
+    },
     // --- NUEVOS MÉTODOS ---
     reactivar: async (id) => {
         const response = await axios.put(`${API_URL}/${id}/reactivar`);

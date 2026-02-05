@@ -1,6 +1,7 @@
 const { Socio, Pago } = require('../db');
 const { Op } = require('sequelize');
 
+// 1. Obtener Socios (Con Historial y Pagos ordenados)
 exports.obtenerSocios = async (req, res) => {
     try {
         const mostrarInactivos = req.query.inactivos === 'true';
@@ -19,9 +20,9 @@ exports.obtenerSocios = async (req, res) => {
     }
 };
 
+// 2. Crear Socio (Con Monto Inicial)
 exports.crearSocio = async (req, res) => {
     try {
-        // Recibimos 'monto' del frontend
         const { nombre, telefono, fechaPago, metodoPago, monto } = req.body;
 
         const fechaP = new Date(fechaPago);
@@ -38,7 +39,7 @@ exports.crearSocio = async (req, res) => {
         await Pago.create({
             fecha: fechaPago,
             metodoPago: metodoPago,
-            monto: parseFloat(monto) || 0, // Aseguramos que sea número
+            monto: parseFloat(monto) || 0,
             SocioId: nuevoSocio.id
         });
 
@@ -48,10 +49,10 @@ exports.crearSocio = async (req, res) => {
     }
 };
 
+// 3. Renovar Cuota (Con Monto)
 exports.renovarCuota = async (req, res) => {
     try {
         const { id } = req.params;
-        // Recibimos 'monto' en la renovación también
         const { fechaPago, metodoPago, monto } = req.body;
 
         const fechaP = new Date(fechaPago);
@@ -78,7 +79,7 @@ exports.renovarCuota = async (req, res) => {
     }
 };
 
-// --- ESTADÍSTICAS RECARGADAS (AHORA CUENTAN PLATA) ---
+// 4. Estadísticas (Sumando dinero)
 exports.obtenerEstadisticas = async (req, res) => {
     try {
         const pagos = await Pago.findAll();
@@ -86,22 +87,18 @@ exports.obtenerEstadisticas = async (req, res) => {
 
         pagos.forEach(pago => {
             const fecha = pago.fecha;
-            const mes = fecha.substring(0, 7); // "2026-02"
-            const anio = fecha.substring(0, 4); // "2026"
+            const mes = fecha.substring(0, 7);
+            const anio = fecha.substring(0, 4);
             const metodo = pago.metodoPago;
             const monto = pago.monto || 0;
 
             // Inicializar Mes
             if (!estadisticas.mensuales[mes]) estadisticas.mensuales[mes] = { Total: 0, Efectivo: 0, Transferencia: 0, Tarjeta: 0 };
-
-            // SUMAR PLATA (Antes era +1, ahora es +monto)
             estadisticas.mensuales[mes][metodo] += monto;
             estadisticas.mensuales[mes].Total += monto;
 
             // Inicializar Año
             if (!estadisticas.anuales[anio]) estadisticas.anuales[anio] = { Total: 0, Efectivo: 0, Transferencia: 0, Tarjeta: 0 };
-
-            // SUMAR PLATA AL AÑO
             estadisticas.anuales[anio][metodo] += monto;
             estadisticas.anuales[anio].Total += monto;
         });
@@ -112,15 +109,54 @@ exports.obtenerEstadisticas = async (req, res) => {
     }
 };
 
-// --- Dejar las otras funciones (actualizar, bajas, etc) IGUAL que antes ---
-exports.actualizarSocio = async (req, res) => { /* ... código viejo ... */ };
-exports.bajaLogica = async (req, res) => {
-    const { id } = req.params;
-    await Socio.update({ activo: false }, { where: { id } });
-    res.json({ message: 'Baja' });
+// 5. Actualizar un Pago específico (Edición de montos/fechas)
+exports.actualizarPago = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { fecha, metodoPago, monto } = req.body;
+
+        await Pago.update({
+            fecha,
+            metodoPago,
+            monto: parseFloat(monto)
+        }, { where: { id } });
+
+        res.json({ message: 'Pago actualizado correctamente' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
+
+// 6. Actualizar Datos del Socio (Nombre y Teléfono) - ¡ESTA FALTABA!
+exports.actualizarSocio = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // req.body trae { nombre: '...', telefono: '...' }
+        await Socio.update(req.body, { where: { id } });
+        res.json({ message: 'Datos del socio actualizados' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// 7. Baja Lógica
+exports.bajaLogica = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Socio.update({ activo: false }, { where: { id } });
+        res.json({ message: 'Baja' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// 8. Reactivar Socio
 exports.reactivarSocio = async (req, res) => {
-    const { id } = req.params;
-    await Socio.update({ activo: true }, { where: { id } });
-    res.json({ message: 'Alta' });
+    try {
+        const { id } = req.params;
+        await Socio.update({ activo: true }, { where: { id } });
+        res.json({ message: 'Alta' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };

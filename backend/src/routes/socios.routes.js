@@ -1,21 +1,36 @@
 const express = require('express');
-const router = express.Router(); // <--- ESTA LÍNEA FALTABA O ESTABA DESPUÉS
+const router = express.Router();
 const sociosController = require('../controllers/socios.controller');
 
-// --- RUTAS ---
+// --- ⚠️ IMPORTANTE: EL ORDEN IMPORTA ---
+// Las rutas específicas (como estadísticas o pagos) deben ir ARRIBA.
+// Las rutas con :id (como editar socio) deben ir ABAJO.
 
-// 1. Estadísticas (IMPORTANTE: Esta ruta tiene que ir ANTES de /:id)
-// Si la ponés abajo, el sistema va a pensar que "estadisticas" es el ID de un socio
+// 1. Estadísticas (PRIMERA, para que no se confunda con un ID)
 router.get('/estadisticas', sociosController.obtenerEstadisticas);
 
-// 2. Rutas Generales
-router.get('/', sociosController.obtenerSocios);
+// 2. Editar PAGOS (Específica)
+router.put('/pagos/:id', sociosController.actualizarPago);
+
+// 3. Crear Socio (General)
 router.post('/', sociosController.crearSocio);
 
-// 3. Rutas Específicas (con ID)
-router.put('/:id', sociosController.actualizarSocio);
-router.delete('/:id', sociosController.bajaLogica);
-router.put('/:id/reactivar', sociosController.reactivarSocio);
+// 4. Obtener todos los socios (General)
+router.get('/', sociosController.obtenerSocios);
+
+
+// --- RUTAS CON PARÁMETROS :id (VAN AL FINAL) ---
+
+// 5. Renovar Cuota
 router.post('/:id/renovar', sociosController.renovarCuota);
+
+// 6. Reactivar
+router.put('/:id/reactivar', sociosController.reactivarSocio);
+
+// 7. EDITAR SOCIO (Nombre y Teléfono)
+router.put('/:id', sociosController.actualizarSocio);
+
+// 8. Borrar
+router.delete('/:id', sociosController.bajaLogica);
 
 module.exports = router;
