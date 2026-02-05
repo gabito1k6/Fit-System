@@ -7,7 +7,6 @@ const sequelize = new Sequelize({
     logging: false
 });
 
-// --- MODELO SOCIO ---
 const Socio = sequelize.define('Socio', {
     nombre: { type: DataTypes.STRING, allowNull: false },
     telefono: { type: DataTypes.STRING, allowNull: false },
@@ -17,19 +16,19 @@ const Socio = sequelize.define('Socio', {
     activo: { type: DataTypes.BOOLEAN, defaultValue: true }
 });
 
-// --- MODELO PAGO (HISTORIAL) ---
 const Pago = sequelize.define('Pago', {
     fecha: { type: DataTypes.DATEONLY, allowNull: false },
     metodoPago: { type: DataTypes.STRING, allowNull: false },
-    // Podríamos agregar 'monto' acá en el futuro
+    // --- NUEVO CAMPO ---
+    monto: { type: DataTypes.FLOAT, allowNull: false, defaultValue: 0 }
+    // -------------------
 });
 
-// Relaciones: Un Socio tiene muchos Pagos
 Socio.hasMany(Pago);
 Pago.belongsTo(Socio);
 
-sequelize.sync()
-    .then(() => console.log("Base de datos sincronizada (Socios y Pagos)"))
+sequelize.sync({ force: false }) // Cambiar a true si da error de columna, pero perderás datos
+    .then(() => console.log("Base de datos sincronizada"))
     .catch(err => console.error("Error DB:", err));
 
 module.exports = { sequelize, Socio, Pago };
