@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { sociosService } from "../services/socios.service";
 import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form"; // Importamos hook form para el modal de renovación
+import { useForm } from "react-hook-form";
 
 function Dashboard() {
   const [socios, setSocios] = useState([]);
@@ -10,9 +10,9 @@ function Dashboard() {
   const [paginaActual, setPaginaActual] = useState(1);
 
   // Estados nuevos
-  const [verInactivos, setVerInactivos] = useState(false); // Para el toggle de papelera
-  const [socioSeleccionado, setSocioSeleccionado] = useState(null); // Para ver ficha
-  const [socioARenovar, setSocioARenovar] = useState(null); // Para el modal de renovar
+  const [verInactivos, setVerInactivos] = useState(false);
+  const [socioSeleccionado, setSocioSeleccionado] = useState(null);
+  const [socioARenovar, setSocioARenovar] = useState(null);
 
   // Formulario para la renovación
   const { register, handleSubmit, reset } = useForm();
@@ -21,11 +21,11 @@ function Dashboard() {
 
   useEffect(() => {
     cargarSocios();
-  }, [verInactivos]); // Se recarga cuando cambiamos el modo (Activos/Inactivos)
+  }, [verInactivos]);
 
   const cargarSocios = async () => {
     try {
-      const data = await sociosService.obtenerTodos(verInactivos);
+      const data = await sociosService.obtenerTodos(verInactivos); // Asegurate que en el service se llame obtenerTodos o obtenerSocios
       setSocios(data);
     } catch (error) {
       console.error("Error cargando socios:", error);
@@ -51,17 +51,15 @@ function Dashboard() {
     try {
       await sociosService.renovar(socioARenovar.id, data);
       alert(`✅ Cuota renovada para ${socioARenovar.nombre}`);
-      setSocioARenovar(null); // Cerramos modal
-      cargarSocios(); // Recargamos lista
+      setSocioARenovar(null);
+      cargarSocios();
     } catch (error) {
       alert("Error al renovar");
     }
   };
 
-  // Abrir modal de renovación
   const abrirRenovacion = (socio) => {
     setSocioARenovar(socio);
-    // Pre-llenamos con la fecha de hoy
     reset({
       fechaPago: new Date().toISOString().split("T")[0],
       metodoPago: "Efectivo",
@@ -110,7 +108,6 @@ function Dashboard() {
         </h2>
 
         <div className="d-flex gap-2 align-items-center">
-          {/* TOGGLE INACTIVOS */}
           <div className="form-check form-switch me-3">
             <input
               className="form-check-input"
@@ -146,7 +143,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* BARRA DE ORDEN (Solo visible en activos para no ensuciar) */}
       {!verInactivos && (
         <div className="mb-3 d-flex gap-2 align-items-center">
           <small className="fw-bold text-muted">Ordenar:</small>
@@ -223,9 +219,7 @@ function Dashboard() {
                       </td>
                       <td className="text-end pe-4">
                         <div className="btn-group">
-                          {/* BOTONES SEGÚN ESTADO */}
                           {verInactivos ? (
-                            // ACCIONES PARA BORRADOS
                             <button
                               className="btn btn-outline-success btn-sm"
                               onClick={() => handleReactivar(socio.id)}
@@ -234,7 +228,6 @@ function Dashboard() {
                               ♻️ Restaurar
                             </button>
                           ) : (
-                            // ACCIONES PARA ACTIVOS
                             <>
                               <button
                                 className="btn btn-outline-primary btn-sm"
@@ -285,7 +278,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* PAGINACIÓN SIMPLE */}
       {totalPaginas > 1 && (
         <nav className="mt-4 d-flex justify-content-center">
           <ul className="pagination shadow-sm">
@@ -316,7 +308,7 @@ function Dashboard() {
         </nav>
       )}
 
-      {/* --- MODAL FICHA (Solo lectura) --- */}
+      {/* --- MODAL FICHA (CON HISTORIAL AGREGADO) --- */}
       {socioSeleccionado && (
         <div
           className="modal fade show d-block"
@@ -347,6 +339,37 @@ function Dashboard() {
                   <strong>🚨 Vence:</strong>{" "}
                   {formatearFecha(socioSeleccionado.fechaVencimiento)}
                 </p>
+
+                <hr className="my-3" />
+
+                {/* --- SECCIÓN NUEVA: HISTORIAL DE PAGOS --- */}
+                <h6 className="fw-bold text-dark">📜 Historial de Pagos</h6>
+                {socioSeleccionado.Pagos &&
+                socioSeleccionado.Pagos.length > 0 ? (
+                  <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+                    <table className="table table-sm table-striped small mb-0">
+                      <thead className="table-light sticky-top">
+                        <tr>
+                          <th>Fecha</th>
+                          <th>Método</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {socioSeleccionado.Pagos.map((pago, index) => (
+                          <tr key={index}>
+                            <td>{formatearFecha(pago.fecha)}</td>
+                            <td>{pago.metodoPago}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="alert alert-light text-center small text-muted border">
+                    No hay historial disponible.
+                  </div>
+                )}
+                {/* ----------------------------------------- */}
               </div>
               <div className="modal-footer">
                 <button
@@ -361,7 +384,7 @@ function Dashboard() {
         </div>
       )}
 
-      {/* --- MODAL RENOVAR CUOTA (Formulario) --- */}
+      {/* --- MODAL RENOVAR CUOTA --- */}
       {socioARenovar && (
         <div
           className="modal fade show d-block"
@@ -382,10 +405,9 @@ function Dashboard() {
               <form onSubmit={handleSubmit(onRenovarSubmit)}>
                 <div className="modal-body">
                   <div className="alert alert-info small">
-                    Esto actualizará la fecha de pago a hoy (o la que elijas) y
-                    extenderá el vencimiento 1 mes.
+                    Esto actualizará la fecha de pago y extenderá el vencimiento
+                    1 mes.
                   </div>
-
                   <div className="mb-3">
                     <label className="form-label fw-bold">Fecha de Pago:</label>
                     <input
@@ -394,7 +416,6 @@ function Dashboard() {
                       {...register("fechaPago", { required: true })}
                     />
                   </div>
-
                   <div className="mb-3">
                     <label className="form-label fw-bold">
                       Método de Pago:

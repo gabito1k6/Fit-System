@@ -1,24 +1,29 @@
+// 1. ASEGURATE DE QUE LA PRIMERA LÍNEA IMPORTE 'Pago'
 const { Socio, Pago } = require('../db');
 const { Op } = require('sequelize');
 
-// ... (Las funciones obtenerSocios, actualizarSocio, bajaLogica y reactivarSocio QUEDAN IGUAL) ...
-// COPIÁ LAS QUE YA TENÍAS Y SOLO REEMPLAZÁ 'crearSocio' y 'renovarCuota', y agregá 'obtenerEstadisticas'
-
 exports.obtenerSocios = async (req, res) => {
-    /* ... TU CÓDIGO ACTUAL ... */
-    // (Pongo esto resumido, usá el que ya tenías que funcionaba bien con filtros)
     try {
         const mostrarInactivos = req.query.inactivos === 'true';
         const socios = await Socio.findAll({
             where: { activo: !mostrarInactivos },
+            // --- ESTO ES LO NUEVO: Traemos los pagos ---
+            include: [{
+                model: Pago,
+                separate: true,             // Para poder ordenarlos
+                order: [['fecha', 'DESC']]  // El más nuevo arriba
+            }],
+            // ------------------------------------------
             order: [['fechaVencimiento', 'ASC']]
         });
         res.json(socios);
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
 };
 
+// ... El resto de las funciones (crearSocio, renovar, etc.) dejalas IGUAL que en tu backup.
 exports.actualizarSocio = async (req, res) => {
     /* ... TU CÓDIGO ACTUAL ... */
     try {
