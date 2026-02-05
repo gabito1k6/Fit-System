@@ -9,8 +9,18 @@ function Dashboard() {
   const [orden, setOrden] = useState("vencimiento");
   const [paginaActual, setPaginaActual] = useState(1);
   const [verInactivos, setVerInactivos] = useState(false);
+
+  // Estados para modales
   const [socioSeleccionado, setSocioSeleccionado] = useState(null);
   const [socioARenovar, setSocioARenovar] = useState(null);
+
+  // --- ESTADOS NUEVOS PARA EDICIÓN ---
+  const [editando, setEditando] = useState(false);
+  const [datosEdicion, setDatosEdicion] = useState({
+    nombre: "",
+    telefono: "",
+  });
+  // -----------------------------------
 
   const { register, handleSubmit, reset } = useForm();
   const ELEMENTOS_POR_PAGINA = 5;
@@ -55,18 +65,39 @@ function Dashboard() {
     }
   };
 
+  // --- FUNCIÓN PARA GUARDAR LA EDICIÓN ---
+  const guardarEdicion = async () => {
+    try {
+      await sociosService.actualizar(socioSeleccionado.id, datosEdicion);
+      alert("✅ Datos actualizados");
+      setEditando(false);
+
+      // Actualizamos la vista localmente para no recargar todo
+      setSocioSeleccionado({ ...socioSeleccionado, ...datosEdicion });
+      cargarSocios();
+    } catch (error) {
+      alert("❌ Error al actualizar");
+    }
+  };
+  // ---------------------------------------
+
+  const abrirFicha = (socio) => {
+    setSocioSeleccionado(socio);
+    setEditando(false); // Reseteamos el modo edición
+    setDatosEdicion({ nombre: socio.nombre, telefono: socio.telefono }); // Cargamos datos actuales
+  };
+
   const abrirRenovacion = (socio) => {
     setSocioARenovar(socio);
     reset({
       fechaPago: new Date().toISOString().split("T")[0],
       metodoPago: "Efectivo",
-      monto: 15000, // Valor por defecto sugerido
+      monto: 15000,
     });
   };
 
   const formatearFecha = (f) => (f ? f.split("-").reverse().join("/") : "-");
 
-  // Lógica de tabla (igual que antes)
   const sociosFiltrados = socios.filter((s) =>
     s.nombre.toLowerCase().includes(filtro.toLowerCase()),
   );
@@ -85,14 +116,14 @@ function Dashboard() {
     let tel = socio.telefono.replace(/[^0-9]/g, "");
     if (tel.length === 10) tel = `549${tel}`;
     window.open(
-      `https://wa.me/${tel}?text=${encodeURIComponent(`Hola ${socio.nombre}, vence tu cuota el ${formatearFecha(socio.fechaVencimiento)}`)}`,
+      `https://wa.me/${tel}?text=${encodeURIComponent(`Hola ${socio.nombre}, Queríamos recordarte que tu cuota vence el ${formatearFecha(socio.fechaVencimiento)}`)}`,
       "_blank",
     );
   };
 
   return (
     <div className="container mt-4">
-      {/* Header y Filtros (Igual que antes) */}
+      {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h2 className="text-primary fw-bold mb-0">
           {verInactivos ? "🗑️ Papelera" : "🏋️ Panel de Control"}
@@ -144,7 +175,7 @@ function Dashboard() {
         </div>
       )}
 
-      {/* Tabla Principal */}
+      {/* Tabla */}
       <div
         className={`card shadow border-0 overflow-hidden ${verInactivos ? "border-danger" : ""}`}
       >
@@ -215,9 +246,10 @@ function Dashboard() {
                               >
                                 💲 Renovar
                               </button>
+                              {/* CAMBIO: Llamamos a abrirFicha en lugar de setSocioSeleccionado directo */}
                               <button
                                 className="btn btn-outline-secondary btn-sm"
-                                onClick={() => setSocioSeleccionado(socio)}
+                                onClick={() => abrirFicha(socio)}
                               >
                                 👁️
                               </button>
@@ -285,7 +317,7 @@ function Dashboard() {
         </nav>
       )}
 
-      {/* MODAL FICHA (Con Historial y MONTO) */}
+      {/* --- MODAL FICHA (AHORA CON EDICIÓN) --- */}
       {socioSeleccionado && (
         <div
           className="modal fade show d-block"
@@ -293,9 +325,13 @@ function Dashboard() {
         >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content border-0 shadow-lg">
-              <div className="modal-header bg-secondary text-white">
+              <div
+                className={`modal-header text-white ${editando ? "bg-warning" : "bg-secondary"}`}
+              >
                 <h5 className="modal-title">
-                  Ficha de {socioSeleccionado.nombre}
+                  {editando
+                    ? "✏️ Editando Socio"
+                    : `Ficha de ${socioSeleccionado.nombre}`}
                 </h5>
                 <button
                   type="button"
@@ -303,10 +339,56 @@ function Dashboard() {
                   onClick={() => setSocioSeleccionado(null)}
                 ></button>
               </div>
+
               <div className="modal-body">
-                <p>
-                  <strong>📞 Teléfono:</strong> {socioSeleccionado.telefono}
-                </p>
+                {/* SI ESTAMOS EDITANDO: Mostramos Inputs */}
+                {editando ? (
+                  <div className="mb-3">
+                    <label className="form-label fw-bold">
+                      Nombre Completo:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control mb-3"
+                      value={datosEdicion.nombre}
+                      onChange={(e) =>
+                        setDatosEdicion({
+                          ...datosEdicion,
+                          nombre: e.target.value,
+                        })
+                      }
+                    />
+                    <label className="form-label fw-bold">Teléfono:</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={datosEdicion.telefono}
+                      onChange={(e) =>
+                        setDatosEdicion({
+                          ...datosEdicion,
+                          telefono: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                ) : (
+                  /* SI NO ESTAMOS EDITANDO: Mostramos Texto Normal */
+                  <>
+                    <p>
+                      <strong>📞 Teléfono:</strong> {socioSeleccionado.telefono}
+                    </p>
+                    <p>
+                      <strong>💳 Último Pago:</strong>{" "}
+                      {formatearFecha(socioSeleccionado.fechaPago)} (
+                      {socioSeleccionado.metodoPago})
+                    </p>
+                    <p className="text-danger fw-bold">
+                      <strong>🚨 Vence:</strong>{" "}
+                      {formatearFecha(socioSeleccionado.fechaVencimiento)}
+                    </p>
+                  </>
+                )}
+
                 <hr className="my-3" />
                 <h6 className="fw-bold text-dark">📜 Historial de Pagos</h6>
                 {socioSeleccionado.Pagos &&
@@ -339,20 +421,46 @@ function Dashboard() {
                   </div>
                 )}
               </div>
+
               <div className="modal-footer">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setSocioSeleccionado(null)}
-                >
-                  Cerrar
-                </button>
+                {editando ? (
+                  <>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => setEditando(false)}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      className="btn btn-success fw-bold"
+                      onClick={guardarEdicion}
+                    >
+                      💾 Guardar Cambios
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className="btn btn-warning btn-sm"
+                      onClick={() => setEditando(true)}
+                    >
+                      ✏️ Editar Datos
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => setSocioSeleccionado(null)}
+                    >
+                      Cerrar
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* MODAL RENOVAR (Con campo MONTO) */}
+      {/* MODAL RENOVAR */}
       {socioARenovar && (
         <div
           className="modal fade show d-block"
@@ -380,8 +488,6 @@ function Dashboard() {
                       {...register("fechaPago", { required: true })}
                     />
                   </div>
-
-                  {/* --- CAMPO NUEVO: MONTO --- */}
                   <div className="mb-3">
                     <label className="form-label fw-bold">Monto ($):</label>
                     <input
@@ -391,8 +497,6 @@ function Dashboard() {
                       {...register("monto", { required: true, min: 0 })}
                     />
                   </div>
-                  {/* -------------------------- */}
-
                   <div className="mb-3">
                     <label className="form-label fw-bold">Método:</label>
                     <select className="form-select" {...register("metodoPago")}>
